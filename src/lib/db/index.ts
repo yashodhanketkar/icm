@@ -1,26 +1,13 @@
-export type NoteType = {
-  id: string;
-  title: string;
-  body: string;
-};
+import { NoteType, Stores, version } from "./util";
 
-export enum Stores {
-  Notes = "notes",
-}
-
-let request: IDBOpenDBRequest;
-let db: IDBDatabase;
-let version = 1;
-
-export const initDB = (): Promise<boolean> => {
+const initDB = (): Promise<boolean> => {
   return new Promise((resolve) => {
-    request = indexedDB.open("icmDB");
+    const request = indexedDB.open("icmDB");
 
     request.onupgradeneeded = () => {
-      db = request.result;
+      const db = request.result;
 
       if (!db.objectStoreNames.contains(Stores.Notes)) {
-        console.log("Creating notes");
         db.createObjectStore(Stores.Notes, {
           keyPath: "id",
         });
@@ -28,9 +15,6 @@ export const initDB = (): Promise<boolean> => {
     };
 
     request.onsuccess = () => {
-      db = request.result;
-      version = db.version;
-      console.log("request onsuccess - initDB", version);
       resolve(true);
     };
 
@@ -40,19 +24,20 @@ export const initDB = (): Promise<boolean> => {
   });
 };
 
-export const addData = <T>(
-  storename: string,
+const addData = <T>(
+  storeName: string,
   data: T,
-): Promise<T | string | null> => {
+): Promise<(T & { done: boolean }) | string | null> => {
   return new Promise((resolve) => {
-    request = indexedDB.open("icmDB", version);
+    const request = indexedDB.open("icmDB", version);
 
     request.onsuccess = () => {
-      db = request.result;
-      const tx = db.transaction(storename, "readwrite");
-      const store = tx.objectStore(storename);
-      store.add(data);
-      resolve(data);
+      const db = request.result;
+      const tx = db.transaction(storeName, "readwrite");
+      const store = tx.objectStore(storeName);
+      const storeData = { ...data, done: false };
+      store.add(storeData);
+      resolve(storeData);
     };
 
     request.onerror = () => {
@@ -66,15 +51,14 @@ export const addData = <T>(
   });
 };
 
-export const getData = <T>(storename: string): Promise<T[]> => {
+const getData = <T>(storeName: string): Promise<T[]> => {
   return new Promise((resolve) => {
-    request = indexedDB.open("icmDB");
+    const request = indexedDB.open("icmDB");
 
     request.onsuccess = () => {
-      console.log("request onsuccess - getAllData");
-      db = request.result;
-      const tx = db.transaction(storename, "readonly");
-      const store = tx.objectStore(storename);
+      const db = request.result;
+      const tx = db.transaction(storeName, "readonly");
+      const store = tx.objectStore(storeName);
       const res = store.getAll();
       res.onsuccess = () => {
         resolve(res.result);
@@ -82,3 +66,54 @@ export const getData = <T>(storename: string): Promise<T[]> => {
     };
   });
 };
+
+const updateData = (
+  storeName: string,
+  note: NoteType,
+): Promise<NoteType | string | null> => {
+  return new Promise((resolve) => {
+    const request = indexedDB.open("icmDB", version);
+
+    request.onsuccess = () => {
+      const db = request.result;
+      const tx = db.transaction(storeName, "readwrite");
+      const store = tx.objectStore(storeName);
+      const update = { ...note, done: !note.done };
+      store.put(update);
+      resolve(update);
+    };
+
+    request.onerror = () => {
+      const error = request.error?.message;
+      if (error) {
+        resolve(error);
+      } else {
+        resolve("Unknown error");
+      }
+    };
+  });
+};
+
+const deleteData = (storeName: string, key: string): Promise<boolean> => {
+  return new Promise((resolve) => {
+    const request = indexedDB.open("icmDB");
+
+    request.onsuccess = () => {
+      const db = request.result;
+      const tx = db.transaction(storeName, "readwrite");
+      const store = tx.objectStore(storeName);
+      const res = store.delete(key);
+
+      res.onsuccess = () => {
+        resolve(true);
+      };
+
+      res.onerror = () => {
+        resolve(false);
+      };
+    };
+  });
+};
+
+export type { NoteType } from "./util";
+export { Stores, initDB, addData, getData, updateData, deleteData };

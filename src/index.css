@@ -11,5 +11,5 @@ html {
 }
 
 body {
-  @apply text-gray-800 bg-gray-200;
+  @apply bg-icmb text-icmt;
 }
