@@ -3,7 +3,7 @@ import { initDB } from "../../../lib/db";
 import { handleNote } from "./handler";
 
 export const CreateNotes = () => {
-  const [isDBReady, setIsDBReady] = useState<boolean>(false);
+  const [isDBReady, setIsDBReady] = useState(false);
   const [error, setError] = useState("");
 
   const handleIsDBReady = async () => {
@@ -33,19 +33,18 @@ export const CreateNotes = () => {
         onSubmit={(e) => handleNote(e, setError)}
       >
         <input
-          className="p-2 rounded text-lg bg-icmb border-b-icmh border-0 border-b-2 text-icmt placeholder-icmt outline-none focus-visible:border-b-icmt"
+          className="p-2 rounded text-lg bg-icmb border-b-icmh border-0 border-b-2 text-icmt placeholder-icmt/50 outline-none focus-visible:border-b-icmt"
           type="text"
           name="title"
-          placeholder="title"
+          placeholder="start writing here..."
         />
-        <input
-          className="p-2 rounded text-lg bg-icmb border-b-icmh border-0 border-b-2 text-icmt placeholder-icmt outline-none focus-visible:border-b-icmt"
-          type="text"
+        <textarea
+          className="p-2 rounded text-lg bg-icmb border-b-icmh border-0 border-b-2 text-icmt placeholder-icmt/50 outline-none focus-visible:border-b-icmt resize-none h-32"
           name="body"
-          placeholder="body"
+          placeholder="start writing here..."
         />
         <button
-          className="mx-auto my-auto text-white bg-icms hover:bg-icmt transition-colors duration-500 ease-out py-2 px-4 rounded outline-none focus-visible:bg-icmt"
+          className="mx-auto my-auto text-white bg-icmh hover:bg-icmt transition-colors duration-500 ease-out py-2 px-4 rounded outline-none focus-visible:bg-icmt"
           type="submit"
         >
           Save

@@ -1,10 +1,19 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { CreateNotes, ReadNotes } from "../../components/notes";
 
 export const NotesView = () => {
   const [showCreateNotes, setShowCreateNotes] = useState(false);
 
-  const toggleShowCreateNotes = () => setShowCreateNotes((prev) => !prev);
+  const toggleShowCreateNotes = () => {
+    const newState = !showCreateNotes;
+    localStorage.setItem("showCreateNotesState", String(newState));
+    setShowCreateNotes(newState);
+  };
+
+  useEffect(() => {
+    const savedState = localStorage.getItem("showCreateNotesState");
+    setShowCreateNotes(savedState === "true");
+  }, []);
 
   return (
     <div className="grid gap-4 grid-cols-1 px-2 md:px-0 md:grid-cols-2">

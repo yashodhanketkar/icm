@@ -27,17 +27,22 @@ export const NoteListBuilder = ({
         .map((note) => (
           <div
             key={note.id}
-            className="flex flex-row justify-between gap-2 p-2 ring-1 ring-icmh rounded z-10"
+            className="inline-flex justify-between items-start gap-2 p-2 ring-1 ring-icmh rounded z-10"
           >
-            <span onClick={() => handleUpdateNotes(note)}>
+            <span
+              className="w-6 cursor-pointer"
+              onClick={() => handleUpdateNotes(note)}
+            >
               [{note.done ? "x" : " "}]
             </span>
-            <span>{note.title}</span>
-            <span className="mr-auto">{note.body}</span>
+            <div className="flex flex-col w-full mr-auto">
+              <p className="font-semibold">{note.title}</p>
+              <p>{note.body}</p>
+            </div>
             <button
               type="button"
               name="delete"
-              className="font-extrabold text-xl text-red-500 z-50"
+              className="font-extrabold w-4 text-xl text-icmt z-50"
               onClick={() => handleDeleteNotes(note.id)}
             >
               X

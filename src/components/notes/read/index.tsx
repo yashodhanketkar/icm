@@ -31,7 +31,18 @@ export const ReadNotes = () => {
   }, []);
 
   if (notesList.length <= 0)
-    return <button onClick={handleGetNotes}>Load</button>;
+    return (
+      <div className="flex flex-col items-center w-full gap-2 max-h-[80vh] overflow-y-auto pb-2 px-1">
+        <p>No notes found!</p>
+        <p>If you think this is an error please click on load button.</p>
+        <button
+          onClick={handleGetNotes}
+          className="mx-auto text-white bg-icmh hover:bg-icmt transition-colors duration-500 ease-out py-2 px-4 rounded outline-none focus-visible:bg-icmt"
+        >
+          Load
+        </button>
+      </div>
+    );
 
   return (
     <div className="flex flex-col w-full gap-2 max-h-[80vh] overflow-y-auto pb-2 px-1">
